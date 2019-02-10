@@ -3,6 +3,8 @@
 import http.server
 import requests
 import os
+import threading
+from socketserver import ThreadingMixIn
 from urllib.parse import unquote, parse_qs
 
 memory = {}
@@ -42,7 +44,7 @@ def CheckURI(uri, timeout=5):
         return False
 
 
-class Shortener(http.server.BaseHTTPRequestHandler):
+class ThreadHTTPServer(ThreadingMixIn, http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         # A GET request will either be for / (the root path) or for /some-name.
         # Strip off the / and we have either empty string or a name.
@@ -111,5 +113,5 @@ class Shortener(http.server.BaseHTTPRequestHandler):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     server_address = ('', port)
-    httpd = http.server.HTTPServer(server_address, Shortener)
+    httpd = ThreadHTTPServer(server_address, Shortener)
     httpd.serve_forever()
