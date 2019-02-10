@@ -43,8 +43,10 @@ def CheckURI(uri, timeout=5):
     except requests.RequestException:
         return False
 
-
-class ThreadHTTPServer(ThreadingMixIn, http.server.BaseHTTPRequestHandler):
+class ThreadHTTPServer(ThreadingMixIn, http.server.HTTPServer):
+    "This is an HTTPServer that supports thread-based concurrency."
+    
+class Shortener(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         # A GET request will either be for / (the root path) or for /some-name.
         # Strip off the / and we have either empty string or a name.
